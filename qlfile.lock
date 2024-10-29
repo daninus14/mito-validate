@@ -6,3 +6,11 @@
  (:class qlot/source/github:source-github
   :initargs (:repos "fukamachi/mito" :ref nil :branch nil :tag nil)
   :version "github-d04f03b41e042181292ba9dbf567e26dcb85460e"))
+("log4sly" .
+ (:class qlot/source/github:source-github
+  :initargs (:repos "40ants/log4sly" :ref nil :branch nil :tag nil)
+  :version "github-b229658c7fa8a8ff62cddd832e812cda96b50df6"))
+("log4cl" .
+ (:class qlot/source/github:source-github
+  :initargs (:repos "7max/log4cl" :ref nil :branch nil :tag nil)
+  :version "github-d6293f9f1b6b8871b0a4417c4bb22afb9910b97f"))
