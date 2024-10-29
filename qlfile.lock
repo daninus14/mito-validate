@@ -1,0 +1,8 @@
+("quicklisp" .
+ (:class qlot/source/dist:source-dist
+  :initargs (:distribution "https://beta.quicklisp.org/dist/quicklisp.txt" :%version :latest)
+  :version "2024-10-12"))
+("mito" .
+ (:class qlot/source/github:source-github
+  :initargs (:repos "fukamachi/mito" :ref nil :branch nil :tag nil)
+  :version "github-d04f03b41e042181292ba9dbf567e26dcb85460e"))
