@@ -1,2 +1,126 @@
-# mito-validate
+* mito-validate
 Validation System for mito ORM
+
+* Getting Started
+
+** Getting the code
+
+Right now the source code is hosted here: https://github.com/daninus14/mito-validate
+
+Please check in the future for quicklisp and osicl availability.
+
+** Basic Usage
+
+First, load the system into the lisp image.
+
+#+BEGIN_SRC common-lisp
+(ql:quickload "mito-validate")
+#+END_SRC
+
+Then simply add the =NAME-OF-METACLASS-HERE= metaclass to the class definition of the DB table.
+
+The keys =:valid-type= and =:valid-function= can be used at each slot definition, and the key =:valid-function= can be used at the class level definition to provide slot level and object level validation respectively.
+
+Here's a simple example:
+
+#+BEGIN_SRC
+(defclass customer ()
+((age :type :integer :valid-type (integer 18 )) ; only people 18 and older can make purchases
+;; function below checkes input has only alphabetical characters and is not empty
+(name :type :text :valid-function (lambda (x) (str: x "^[a-zA-Z]+$")))
+(favorite-number :type :integer))) ; this will automatically check in CL that data is an integer
+
+(mito:insert-dao (make-instance 'customer :age 20 :name "Phil" :favorite-number 24))
+=>
+
+(mito:insert-dao (make-instance 'customer :age 16 :name "Phil" :favorite-number 24))
+
+(mito:insert-dao (make-instance 'customer :age 20 :name "Phil18" :favorite-number 24))
+
+(mito:insert-dao (make-instance 'customer :age 20 :name "Phil" :favorite-number "24"))
+
+
+#+END_SRC
+
+This will add automatic Common Lisp validation before sending the request to the DataBase. See the reference below for more details.
+
+* Manual
+
+** Functionality
+
+The way =mito-validate= works is by providing two types of validation:
+- Slot level validation
+- Object level validation
+
+Any validation can be skipped by adding the appropriate keyword to the metaclass or slot definition.
+
+Validations will be triggered when =(mito:insert-dao)= or =(mito:save-dao)= are called.
+
+** Slot Level Validation
+*** DB Type Derivied Validation
+mito-validate will try to make a validation type based on the provided mito type of the slot. Please note that the validation will be based on CL types.
+
+**** TODO Type Congruence
+
+Here is a list of the mito SQL types and the Common Lisp types that will be used to validate them
+
+#+BEGIN_SRC
+list here mito types, and what CL types I'm using to validate the data.
+#+END_SRC
+
+*** TODO Validate Type Assertion
+
+A type can be provided to any slot with the key =:valid-type= in the slot definition.
+
+mito-validate will simply assert that the type of the data fits the provided type as follows:
+
+#+BEGIN_SRC common-lisp
+(assert (typep given-slot-data provided-slot-type))
+#+END_SRC
+
+*** TODO Validate Function Assertion
+
+A validation function can be provided to any slot with the key =:valid-function= in the slot definition.
+
+mito-validate will simply evaluate the function passing it the slot data as the sole argument.
+
+The function must therefore fit the following function:
+
+#+BEGIN_SRC common-lisp
+(lambda (x))
+#+END_SRC
+
+The function should signal a condition in case the data is invalid; otherwise the data will be assumed to be valid. 
+
+Any returned values are ignored.
+
+** TODO Object Level Validation
+
+A validation function which will receive the object as its input can be provided in the class definition with the key =:valid-function= in the metaclass.
+
+The function takes in only one argument, which is the object itself.
+
+#+BEGIN_SRC common-lisp
+(lambda (x))
+#+END_SRC
+
+The function should signal a condition in case the data is invalid; otherwise the data will be assumed to be valid. 
+
+Any returned values are ignored.
+
+** TODO Skipping Validation
+
+*** TODO Skipping All Slot Level Validation
+
+By providing the key =:skip-slot-validations= in the class definition, all the slot level validations will be skipped.
+
+*** TODO Skipping A Slot Level Validation
+
+By providing the key =:skip-validation= in the slot definition, the slot level validation will be skipped.
+
+This will skip **all** validations, whether they be DB Derived Validations, or provided type or function validations.
+
+*** TODO Skipping Object Level Validation 
+
+By providing the key =:skip-object-validation= in the class definition, the object level validation will be skipped.
+
