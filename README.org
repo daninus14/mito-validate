@@ -118,7 +118,7 @@ By providing the key =:skip-slot-validations= in the class definition, all the s
 
 By providing the key =:skip-validation= in the slot definition, the slot level validation will be skipped.
 
-This will skip **all** validations, whether they be DB Derived Validations, or provided type or function validations.
+This will skip *all* validations, whether they be DB Derived Validations, or provided type or function validations.
 
 *** TODO Skipping Object Level Validation 
 
