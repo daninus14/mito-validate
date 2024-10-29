@@ -17,7 +17,7 @@ First, load the system into the lisp image.
 (ql:quickload "mito-validate")
 #+END_SRC
 
-Then simply add the =NAME-OF-METACLASS-HERE= metaclass to the class definition of the DB table.
+Then simply add the =mito-validate-metaclass= metaclass to the class definition of the DB table.
 
 The keys =:valid-type= and =:valid-function= can be used at each slot definition, and the key =:valid-function= can be used at the class level definition to provide slot level and object level validation respectively.
 
