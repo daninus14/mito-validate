@@ -24,20 +24,23 @@ The keys =:valid-type= and =:valid-function= can be used at each slot definition
 Here's a simple example:
 
 #+BEGIN_SRC common-lisp
-  (defclass customer ()
-    ((age :type :integer :valid-type (integer 18 )) ; only people 18 and older can make purchases
-     ;; function below checkes input has only alphabetical characters and is not empty
-     (name :type :text :valid-function (lambda (x) (str: x "^[a-zA-Z]+$")))
-     (favorite-number :type :integer))) ; this will automatically check in CL that data is an integer
+    (defclass customer ()
+      ; only people 18 and older can make purchases
+      ((age :type :integer :valid-type (integer 18 )) 
+       ;; function below checkes input has only alphabetical characters and is not empty
+       (name :type :text :valid-function (lambda (x) (str: x "^[a-zA-Z]+$")))
+       ; this will automatically check in CL that data is an integer
+       (favorite-number :type :integer))
+      (mito-validate-metaclass)) 
 
-  (mito:insert-dao (make-instance 'customer :age 20 :name "Phil" :favorite-number 24))
-  =>
+    (mito:insert-dao (make-instance 'customer :age 20 :name "Phil" :favorite-number 24))
+    =>
 
-  (mito:insert-dao (make-instance 'customer :age 16 :name "Phil" :favorite-number 24))
+    (mito:insert-dao (make-instance 'customer :age 16 :name "Phil" :favorite-number 24))
 
-  (mito:insert-dao (make-instance 'customer :age 20 :name "Phil18" :favorite-number 24))
+    (mito:insert-dao (make-instance 'customer :age 20 :name "Phil18" :favorite-number 24))
 
-  (mito:insert-dao (make-instance 'customer :age 20 :name "Phil" :favorite-number "24"))
+    (mito:insert-dao (make-instance 'customer :age 20 :name "Phil" :favorite-number "24"))
 
 
 #+END_SRC
