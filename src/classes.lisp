@@ -70,10 +70,10 @@
   (declare (ignorable initargs))
   (find-class 'mito-validate-standard-direct-slot-definition))
 
-(defmethod closer-mop:effective-slot-definition-class ((class mito-validate-metaclass)
-                                                       &rest initargs)
-  (declare (ignorable initargs))
-  (find-class 'mito-validate-standard-effective-slot-definition))
+;; (defmethod closer-mop:effective-slot-definition-class ((class mito-validate-metaclass)
+;;                                                        &rest initargs)
+;;   (declare (ignorable initargs))
+;;   (find-class 'mito-validate-standard-effective-slot-definition))
 
 
 ;; (defmethod closer-mop:compute-slots ((class mito-validate-metaclass))
