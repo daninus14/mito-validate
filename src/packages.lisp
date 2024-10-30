@@ -5,4 +5,6 @@
   (:export
    :valid-type
    :valid-function
-   :mito-validate-metaclass))
+   :mito-validate-metaclass
+   :skip-object-validation
+   :skip-validation))
