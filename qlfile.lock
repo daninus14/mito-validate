@@ -12,5 +12,5 @@
   :version "github-b229658c7fa8a8ff62cddd832e812cda96b50df6"))
 ("log4cl" .
  (:class qlot/source/github:source-github
-  :initargs (:repos "7max/log4cl" :ref nil :branch nil :tag nil)
-  :version "github-d6293f9f1b6b8871b0a4417c4bb22afb9910b97f"))
+  :initargs (:repos "sharplispers/log4cl" :ref nil :branch nil :tag nil)
+  :version "github-fe3da517147d023029782ced7cd989ba24f1e62d"))
