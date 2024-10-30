@@ -47,6 +47,14 @@ Here's a simple example:
 
 This will add automatic Common Lisp validation before sending the request to the DataBase. See the reference below for more details.
 
+*Note*: If you are going to be editing the class definitions often, make sure to enable development mode in order that the slot definitions should be computed each time. This is not efficient, and therefore in production the definitions are cached.
+
+Enable development mode by:
+
+#+BEGIN_SRC common-lisp
+(setf mito-validate:*development-mode-p* T)
+#+END_SRC
+
 * Manual
 
 ** Functionality
