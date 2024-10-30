@@ -1,3 +1,5 @@
+(ql:quickload "mito")
+
 (mito:dao-table-mixin)
 
 (mito:dao-table-class)
@@ -53,3 +55,14 @@
 
 (make-instance 'validatable-user :name "hello")
 (class-of (make-instance 'validatable-user :name "hello"))
+
+(defclass c1 ()
+  ((name :col-type (:varchar 64)
+         :valid-type 'string
+         :accessor user-name
+         :skip-validation T))
+  (:metaclass mito-validate:mito-validate-metaclass))
+(defclass c2 (c1)
+  ((email :col-type (or (:varchar 128) :null)
+          :accessor user-email))
+  (:metaclass mito-validate:mito-validate-metaclass))
