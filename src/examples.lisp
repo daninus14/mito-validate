@@ -28,7 +28,8 @@
 (defclass validatable-user ()
   ((name :col-type (:varchar 64)
          :valid-type 'string
-         :accessor user-name)
+         :accessor user-name
+         :skip-validation T)
    (email :col-type (or (:varchar 128) :null)
           :accessor user-email))
   (:metaclass mito-validate:mito-validate-metaclass))
@@ -45,3 +46,10 @@
 (mito:create-dao (make-instance 'validatable-user :name "hello"))
 (mito:save-dao)
 
+
+(setf (my-class-data (find-class 'my-class)) 10)
+
+;; make a macro for defining validatable classes easily.
+
+(make-instance 'validatable-user :name "hello")
+(class-of (make-instance 'validatable-user :name "hello"))

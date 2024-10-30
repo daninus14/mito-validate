@@ -37,16 +37,16 @@ The functionality should be as follows:
   NIL)
 
 (defmethod validate-if-needed-helper (obj (class mito-validate-metaclass))
-  (unless skip-validation
-    (unless :skip-object-validation
+  (unless (skip-validation class)
+    (unless (skip-object-validation class)
       (validate-object-level obj))
-    (unless :skip-slot-validations
+    (unless (skip-slot-validations class)
       (validate-slots obj))))
 
 (defun validate-object-level (obj)
   ;; Validation should be to call function stored in :valid-function slot of class
-  (when :valid-function (funcall :valid-function obj))
-  )
+  (when (valid-function (class-of obj))
+    (funcall (valid-function (class-of obj)) obj)))
 
 (defun validate-slots (obj)
   ;; Will get all slots of class, check if :skip-validation is NIL
