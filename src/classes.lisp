@@ -41,11 +41,11 @@
     (mito-validate-slot-definition closer-mop:standard-effective-slot-definition)
   ())
 
-(defclass mito-validate-standard-direct-slot-definition (mito.dao.column:dao-table-column-class  mito-validate-custom-standard-direct-slot-definition)
+(defclass mito-validate-standard-direct-slot-definition (mito.class.column:table-column-class  mito-validate-custom-standard-direct-slot-definition)
   ())
 
 (defclass mito-validate-standard-effective-slot-definition
-    (mito-validate-custom-standard-effective-slot-definition)
+    (mito.class.column:table-column-class mito-validate-custom-standard-effective-slot-definition)
   ())
 
 (defclass mito-validate-metaclass (mito:dao-table-class)
