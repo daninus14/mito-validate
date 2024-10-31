@@ -1,6 +1,10 @@
 * mito-validate
 Validation System for mito ORM
 
+*NOTE*: This is *not* a data validation library. Rather this is a convenient way to integrate validation with mito objects, and ensure they are validated before a DB call is made.
+For data validation libraries, take a look at the cliki and the awesome-cl list of projects.
+Data validation libraries are meant to be used together with this system for ease of use. They are not exclusive of each other.
+
 * Getting Started
 
 ** Getting the code
