@@ -1,4 +1,5 @@
 (ql:quickload "mito")
+(ql:quickload "mito-validate")
 (setf mito:*auto-migration-mode* T)
 (mito:dao-table-mixin)
 
@@ -106,3 +107,5 @@
 
 
 (mito:insert-dao (make-instance 'c2 :name "ron" :email "ron@fig.com" :age-claimed 17))
+(mito:insert-dao (make-instance 'c2 :name "ron" :email "ron@fig.com" :age -18))
+(mito:insert-dao (make-instance 'c2 :name "ron" :email "ron@fig.com" :age 18))

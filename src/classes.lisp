@@ -41,15 +41,21 @@
     (mito-validate-slot-definition closer-mop:standard-effective-slot-definition)
   ())
 
-(defclass mito-validate-standard-direct-slot-definition (mito.class.column:table-column-class  mito-validate-custom-standard-direct-slot-definition)
+(defclass mito-validate-standard-direct-slot-definition (mito.dao.column:dao-table-column-class  mito-validate-custom-standard-direct-slot-definition)
   ())
 
 (defclass mito-validate-standard-effective-slot-definition
-    (mito.class.column:table-column-class mito-validate-custom-standard-effective-slot-definition)
+    (mito.dao.column:dao-table-column-class  mito-validate-custom-standard-effective-slot-definition)
   ())
 
 (defclass mito-validate-metaclass (mito:dao-table-class)
-  ((skip-validation
+  ((infer-validation
+    :initform nil
+    :initarg :infer-validation
+    :type boolean
+    :accessor infer-validation
+    :documentation "If T the validation types will be attempted to be inferred from the given :col-type in every slot which does not have an existing validation.")
+   (skip-validation
     :initform NIL
     :accessor skip-validation
     :documentation "If T will skip validation for this object entirely.")

@@ -5,9 +5,6 @@
 (defmethod mito:insert-dao :before (obj)
   (validate-if-needed obj))
 
-(defmethod mito:create-dao :before (class &rest initargs)
-  (validate-if-needed obj))
-
 (defmethod mito:save-dao :before (obj)
   (validate-if-needed obj))
 
@@ -56,7 +53,7 @@ The functionality should be as follows:
 
 (defun validate-slots (obj)
   ;; Will get all slots of class, check if :skip-validation is NIL
-  ;; and call validate-slot on each one
+  ;; and call validate-slot on each one  
   (let ((slots (closer-mop:compute-slots (class-of obj))
                ;; (get-class-columns (class-of obj))
                ))
