@@ -47,14 +47,6 @@ Here's a simple example:
 
 This will add automatic Common Lisp validation before sending the request to the DataBase. See the reference below for more details.
 
-*Note*: If you are going to be editing the class definitions often, make sure to enable development mode in order that the slot definitions should be computed each time. This is not efficient, and therefore in production the definitions are cached.
-
-Enable development mode by:
-
-#+BEGIN_SRC common-lisp
-(setf mito-validate:*development-mode-p* T)
-#+END_SRC
-
 * Manual
 
 ** Functionality
@@ -68,8 +60,14 @@ Any validation can be skipped by adding the appropriate keyword to the metaclass
 Validations will be triggered when =(mito:insert-dao)= or =(mito:save-dao)= are called.
 
 ** Slot Level Validation
-*** DB Type Derivied Validation
+*** TODO DB Type Derivied Validation
 mito-validate will try to make a validation type based on the provided mito type of the slot. Please note that the validation will be based on CL types.
+
+This functionality is disabled by default.
+
+To infer the validation type on a slot, add to the slot definition =:infer-validation T=.
+
+To infer the validation type for all the slots on a class, whenever there is no other validation in that slot, apply =:infer-validation T= to the class itself.
 
 **** TODO Type Congruence
 

@@ -3,10 +3,9 @@
 (defpackage #:mito-validate
   (:use :cl)
   (:export
-   :valid-type
-   :valid-function
+   :validation-type
+   :validation-function
    :mito-validate-metaclass
    :skip-object-validation
    :skip-slot-validations
-   :skip-validation
-   :*development-mode-p*))
+   :skip-validation))

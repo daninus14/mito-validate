@@ -29,7 +29,7 @@
 
 (defclass validatable-user ()
   ((name :col-type (:varchar 64)
-         :valid-type 'string
+         :valid-type string
          :accessor user-name
          :skip-validation T)
    (email :col-type (or (:varchar 128) :null)
@@ -58,7 +58,7 @@
 
 (defclass c1 ()
   ((name :col-type (:varchar 64)
-         :valid-type 'string
+         :valid-type string
          :accessor user-name
          :skip-validation T))
   (:metaclass mito-validate:mito-validate-metaclass))
@@ -66,3 +66,15 @@
   ((email :col-type (or (:varchar 128) :null)
           :accessor user-email))
   (:metaclass mito-validate:mito-validate-metaclass))
+
+
+(defun get-class-columns (given-class)
+  (mito.dao::table-column-slots
+   (ensure-class given-class)))
+
+
+(defun ensure-class (class-or-class-name)
+  (etypecase class-or-class-name
+    (symbol (find-class class-or-class-name))
+    (standard-class class-or-class-name)))
+
