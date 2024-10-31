@@ -9,6 +9,8 @@ Right now the source code is hosted here: https://github.com/daninus14/mito-vali
 
 Please check in the future for quicklisp and osicl availability.
 
+Note that because of an implementation error in mito signaling an error unnecessarily, computing effective slots is not possible, so until they merge our PR, please use our up to date (as of 2024/10/31) for of mito here https://github.com/daninus14/mito
+
 ** Basic Usage
 
 First, load the system into the lisp image.
@@ -117,19 +119,24 @@ The function should signal a condition in case the data is invalid; otherwise th
 
 Any returned values are ignored.
 
-** TODO Skipping Validation
+** Skipping Validation
 
-*** TODO Skipping All Slot Level Validation
+*** Skipping All Slot Level Validation
 
 By providing the key =:skip-slot-validations= in the class definition, all the slot level validations will be skipped.
 
-*** TODO Skipping A Slot Level Validation
+*** Skipping A Slot Level Validation
 
 By providing the key =:skip-validation= in the slot definition, the slot level validation will be skipped.
 
 This will skip *all* validations, whether they be DB Derived Validations, or provided type or function validations.
 
-*** TODO Skipping Object Level Validation 
+*** Skipping Object Level Validation 
 
 By providing the key =:skip-object-validation= in the class definition, the object level validation will be skipped.
 
+* TODO Items
+** TODO Add macro for class level validation details for easy
+*** TODO Add macro documentation 
+** TODO Add documentation for adding class level validation
+** TODO Add Inferred Validation Implementation  
