@@ -1,6 +1,12 @@
 * mito-validate
 Validation System for mito ORM
 
+Right now this makes it very easy to add validation based on types and functions to slots, and with a function to the whole object.
+
+*TODO*: We are planning on adding inferred type validation as well as a macro for ease of defining the class level settings.
+
+Please note GitHub is not rendering TODO items in this org file. The inferred and macro sections are *not* finished.
+
 * Getting Started
 
 ** Getting the code
