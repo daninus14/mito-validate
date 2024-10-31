@@ -40,9 +40,11 @@ The functionality should be as follows:
  - Then call validate-slots"))
 
 (defmethod validate-if-needed-helper (obj class)
+  (log:info "class is not a mito-validate-metaclass" class)
   NIL)
 
 (defmethod validate-if-needed-helper (obj (class mito-validate-metaclass))
+  (log:info "class is mito-validate-metaclass" class)
   (unless (skip-validation class)
     (unless (skip-object-validation class)
       (validate-object-level obj))
@@ -69,16 +71,26 @@ The functionality should be as follows:
   ;; Then check if there's a :validation-function and call the function on the slot
   ;; If neither of :validation-function and :validation-type are present then call
   ;; validate-slot-from-inferred-type
-  (when (validation-type-slot-value slot)
-    (assert
-     (typep
-      (slot-value obj
-                  (closer-mop:slot-definition-name slot))
-      (validation-type-slot-value slot))))
-  (when (validation-function-slot-value slot)
-    (funcall (validation-function-slot-value slot)
-             (slot-value obj
-                         (closer-mop:slot-definition-name slot)))))
+  ;; Or maybe just check if the class level infer-validation is set, then only
+  ;; do infer-validation if no specific slot-level validation was provided
+  ;; However, if infer-validation was specified in the sot, then it will
+  ;; be performed regardless of other validation approaches specified
+  (when (slot-boundp obj (closer-mop:slot-definition-name slot))
+    (when (validation-type-slot-value slot)
+      (unless (typep
+               (slot-value obj
+                           (closer-mop:slot-definition-name slot))
+               (validation-type-slot-value slot))
+        (error
+         'type-error
+         :expected-type (validation-type-slot-value slot)
+         :datum (slot-value obj
+                            (closer-mop:slot-definition-name slot)))))
+    (when (validation-function-slot-value slot)
+      (funcall (eval (validation-function-slot-value slot))
+               (slot-value obj
+                           (closer-mop:slot-definition-name slot))
+               ))))
 
 (defun validate-slot-from-inferred-type (slot)
   ;; This will get the mito type of the slot

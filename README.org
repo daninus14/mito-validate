@@ -19,16 +19,16 @@ First, load the system into the lisp image.
 
 Then simply add the =mito-validate-metaclass= metaclass to the class definition of the DB table.
 
-The keys =:valid-type= and =:valid-function= can be used at each slot definition, and the key =:valid-function= can be used at the class level definition to provide slot level and object level validation respectively.
+The keys =:validation-type= and =:validation-function= can be used at each slot definition, and the key =:validation-function= can be used at the class level definition to provide slot level and object level validation respectively.
 
 Here's a simple example:
 
 #+BEGIN_SRC common-lisp
   (defclass customer ()
     ; only people 18 and older can make purchases
-    ((age :type :integer :valid-type (integer 18 )) 
+    ((age :type :integer :validation-type (integer 18 )) 
      ;; function below checkes input has only alphabetical characters and is not empty
-     (name :type :text :valid-function (lambda (x) (str: x "^[a-zA-Z]+$")))
+     (name :type :text :validation-function (lambda (x) (str: x "^[a-zA-Z]+$")))
      ; this will automatically check in CL that data is an integer
      (favorite-number :type :integer))
     (mito-validate-metaclass)) 
@@ -79,7 +79,7 @@ list here mito types, and what CL types I'm using to validate the data.
 
 *** TODO Validate Type Assertion
 
-A type can be provided to any slot with the key =:valid-type= in the slot definition.
+A type can be provided to any slot with the key =:validation-type= in the slot definition.
 
 mito-validate will simply assert that the type of the data fits the provided type as follows:
 
@@ -89,7 +89,7 @@ mito-validate will simply assert that the type of the data fits the provided typ
 
 *** TODO Validate Function Assertion
 
-A validation function can be provided to any slot with the key =:valid-function= in the slot definition.
+A validation function can be provided to any slot with the key =:validation-function= in the slot definition.
 
 mito-validate will simply evaluate the function passing it the slot data as the sole argument.
 
@@ -105,7 +105,7 @@ Any returned values are ignored.
 
 ** TODO Object Level Validation
 
-A validation function which will receive the object as its input can be provided in the class definition with the key =:valid-function= in the metaclass.
+A validation function which will receive the object as its input can be provided in the class definition with the key =:validation-function= in the metaclass.
 
 The function takes in only one argument, which is the object itself.
 

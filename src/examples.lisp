@@ -1,5 +1,5 @@
 (ql:quickload "mito")
-
+(setf mito:*auto-migration-mode* T)
 (mito:dao-table-mixin)
 
 (mito:dao-table-class)
@@ -58,15 +58,30 @@
 
 (defclass c1 ()
   ((name :col-type (:varchar 64)
-         :valid-type string
-         :accessor user-name
-         :skip-validation T))
-  (:metaclass mito-validate:mito-validate-metaclass))
-(defclass c2 (c1)
-  ((email :col-type (or (:varchar 128) :null)
-          :accessor user-email))
+         :validation-type string
+         :accessor name))
   (:metaclass mito-validate:mito-validate-metaclass))
 
+(deftype legal-age ()
+  '(and integer (>= x 18)))
+
+(defclass c2 (c1)
+  ((email :col-type (or (:varchar 128) :null)
+          :accessor user-email)
+   (age :col-type (or :null :integer)
+        :accessor age
+        :validation-function (lambda (x) (when (< x 0) (error "Age cannot be negative!"))))
+   (age-claimed :col-type (or :null :integer)
+                :accessor age-claimed
+                :validation-type legal-age))
+  (:metaclass mito-validate:mito-validate-metaclass))
+
+(defclass c3 ()
+  ((nickname :col-type (:varchar 64)
+             :validation-type string
+             :accessor nickname
+             :skip-validation T))
+  (:metaclass mito-validate:mito-validate-metaclass))
 
 (defun get-class-columns (given-class)
   (mito.dao::table-column-slots
@@ -77,4 +92,12 @@
   (etypecase class-or-class-name
     (symbol (find-class class-or-class-name))
     (standard-class class-or-class-name)))
+
+
+(mito:ensure-table-exists 'c2)
+
+(mito:insert-dao (make-instance 'c2 :name "ron" :email "ron@fig.com"))
+(mito:insert-dao (make-instance 'c2 :name 28 :email "ron@fig.com"))
+
+
 

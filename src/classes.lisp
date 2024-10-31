@@ -44,7 +44,8 @@
 (defclass mito-validate-standard-direct-slot-definition (mito.dao.column:dao-table-column-class  mito-validate-custom-standard-direct-slot-definition)
   ())
 
-(defclass mito-validate-standard-effective-slot-definition (mito.dao.column:dao-table-column-class  mito-validate-custom-standard-effective-slot-definition)
+(defclass mito-validate-standard-effective-slot-definition
+    (mito-validate-custom-standard-effective-slot-definition)
   ())
 
 (defclass mito-validate-metaclass (mito:dao-table-class)
@@ -70,35 +71,24 @@
   (declare (ignorable initargs))
   (find-class 'mito-validate-standard-direct-slot-definition))
 
-;; (defmethod closer-mop:effective-slot-definition-class ((class mito-validate-metaclass)
-;;                                                        &rest initargs)
-;;   (declare (ignorable initargs))
-;;   (find-class 'mito-validate-standard-effective-slot-definition))
-
-
-;; (defmethod closer-mop:compute-slots ((class mito-validate-metaclass))
-;;   (let ((slots (call-next-method)))
-;;     (push (make-instance 'closer-mop:slot-definition
-;;                          :name 'skip-validation
-;;                          :initform NIL
-;;                          :accessor 'skip-validation-slot-value
-;;                          :documentation "This provides the option to specify the slot with a validation-type property.")
-;;           slots)
-;;     (push (make-instance 'closer-mop:slot-definition
-;;                          :name 'validation-function
-;;                          :initform nil
-;;                          :accessor 'validation-function-slot-value
-;;                          :documentation "This provides the option to specify the slot with a validation-function property.")
-;;           slots)
-;;     (push (make-instance 'closer-mop:slot-definition
-;;                          :name 'validation-type
-;;                          :initform nil
-;;                          :accessor 'validation-type-slot-value
-;;                          :documentation "This provides the option to specify the slot with a validation-type property.")
-;;           slots)
-;;     slots))
+(defmethod closer-mop:effective-slot-definition-class ((class mito-validate-metaclass)
+                                                       &rest initargs)
+  (declare (ignorable initargs))
+  (find-class 'mito-validate-standard-effective-slot-definition))
 
 (defmethod closer-mop:validate-superclass ((class mito-validate-metaclass)
                                            (superclass closer-mop:standard-class))
   t)
 
+(defmethod closer-mop:compute-effective-slot-definition
+    :around ((class mito-validate-metaclass) name direct-slot-definitions)
+  (declare (ignore name))
+  (let ((result (call-next-method)))
+    (when result
+      (setf (skip-validation-slot-value result)
+            (some #'skip-validation-slot-value direct-slot-definitions))
+      (setf (validation-type-slot-value result)
+            (some #'validation-type-slot-value direct-slot-definitions))
+      (setf (validation-function-slot-value result)
+            (some #'validation-function-slot-value direct-slot-definitions)))
+    result))
