@@ -40,11 +40,9 @@ The functionality should be as follows:
  - Then call validate-slots"))
 
 (defmethod validate-if-needed-helper (obj class)
-  (log:info "class is not a mito-validate-metaclass" class)
   NIL)
 
 (defmethod validate-if-needed-helper (obj (class mito-validate-metaclass))
-  (log:info "class is mito-validate-metaclass" class)
   (unless (skip-validation class)
     (unless (skip-object-validation class)
       (validate-object-level obj))
@@ -59,7 +57,9 @@ The functionality should be as follows:
 (defun validate-slots (obj)
   ;; Will get all slots of class, check if :skip-validation is NIL
   ;; and call validate-slot on each one
-  (let ((slots (get-class-columns (class-of obj))))
+  (let ((slots (closer-mop:compute-slots (class-of obj))
+               ;; (get-class-columns (class-of obj))
+               ))
     (loop for slot in slots
           unless (skip-validation-slot-value slot)
             ;; here add conditional for infer-validation of the slot and class.

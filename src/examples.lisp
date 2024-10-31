@@ -99,5 +99,7 @@
 (mito:insert-dao (make-instance 'c2 :name "ron" :email "ron@fig.com"))
 (mito:insert-dao (make-instance 'c2 :name 28 :email "ron@fig.com"))
 
+(closer-mop:compute-slots (class-of (make-instance 'c2 :name "hello")))
 
-
+(closer-mop:compute-slots (class-of (make-instance 'c2 :name "hello")))
+(closer-mop:class-slots (class-of (make-instance 'c2 :name "hello")))

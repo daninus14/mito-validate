@@ -9,8 +9,7 @@
 (defmethod skip-validation-slot-value (given-object) NIL)
 
 
-(defclass mito-validate-custom-standard-direct-slot-definition
-    (c2mop:standard-direct-slot-definition)
+(defclass mito-validate-slot-definition ()
   ((skip-validation :initform nil
                     :initarg :skip-validation
                     :type boolean
@@ -25,21 +24,13 @@
                     :accessor validation-type-slot-value
                     :documentation "This provides the option to specify the slot with a validation-type property.")))
 
+(defclass mito-validate-custom-standard-direct-slot-definition
+    (mito-validate-slot-definition c2mop:standard-direct-slot-definition)
+  ())
+
 (defclass mito-validate-custom-standard-effective-slot-definition
-    (closer-mop:standard-effective-slot-definition)
-  ((skip-validation :initform nil
-                    :initarg :skip-validation
-                    :type boolean
-                    :accessor skip-validation-slot-value
-                    :documentation "This provides the option to specify the slot with a skip-validation property.")
-   (validation-function :initform nil
-                        :initarg :validation-function
-                        :accessor validation-function-slot-value
-                        :documentation "This provides the option to specify the slot with a validation-function property.")
-   (validation-type :initform nil
-                    :initarg :validation-type
-                    :accessor validation-type-slot-value
-                    :documentation "This provides the option to specify the slot with a validation-type property.")))
+    (mito-validate-slot-definition closer-mop:standard-effective-slot-definition)
+  ())
 
 (defclass mito-validate-standard-direct-slot-definition (mito.dao.column:dao-table-column-class  mito-validate-custom-standard-direct-slot-definition)
   ())
