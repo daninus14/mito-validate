@@ -4,8 +4,8 @@
   :version "2024-10-12"))
 ("mito" .
  (:class qlot/source/github:source-github
-  :initargs (:repos "fukamachi/mito" :ref nil :branch nil :tag nil)
-  :version "github-d04f03b41e042181292ba9dbf567e26dcb85460e"))
+  :initargs (:repos "daninus14/mito" :ref nil :branch nil :tag nil)
+  :version "github-90e638b3768634fce60181d5fe72750309ae8db8"))
 ("log4sly" .
  (:class qlot/source/github:source-github
   :initargs (:repos "40ants/log4sly" :ref nil :branch nil :tag nil)

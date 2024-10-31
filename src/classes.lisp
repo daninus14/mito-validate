@@ -7,10 +7,19 @@
 (defmethod validation-function-slot-value (given-object) NIL)
 (defgeneric skip-validation-slot-value (given-object))
 (defmethod skip-validation-slot-value (given-object) NIL)
+(defgeneric infer-validation-slot-value (given-object))
+(defmethod infer-validation-slot-value (given-object) NIL)
 
+(defgeneric mito.class.column::%table-column-type (given-object))
+(defmethod mito.class.column::%table-column-type (given-object) NIL)
 
 (defclass mito-validate-slot-definition ()
-  ((skip-validation :initform nil
+  ((infer-validation :initform nil
+                     :initarg :infer-validation
+                     :type boolean
+                     :accessor infer-validation-slot-value
+                     :documentation "If T the validation types will be attempted to be inferred from the given :col-type")
+   (skip-validation :initform nil
                     :initarg :skip-validation
                     :type boolean
                     :accessor skip-validation-slot-value
@@ -78,6 +87,8 @@
     (when result
       (setf (skip-validation-slot-value result)
             (some #'skip-validation-slot-value direct-slot-definitions))
+      (setf (mito.class.column::%table-column-type result)
+            (some #'mito.class.column::%table-column-type direct-slot-definitions))
       (setf (validation-type-slot-value result)
             (some #'validation-type-slot-value direct-slot-definitions))
       (setf (validation-function-slot-value result)

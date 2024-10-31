@@ -73,7 +73,7 @@
         :validation-function (lambda (x) (when (< x 0) (error "Age cannot be negative!"))))
    (age-claimed :col-type (or :null :integer)
                 :accessor age-claimed
-                :validation-type legal-age))
+                :validation-type (integer 18)))
   (:metaclass mito-validate:mito-validate-metaclass))
 
 (defclass c3 ()
@@ -103,3 +103,6 @@
 
 (closer-mop:compute-slots (class-of (make-instance 'c2 :name "hello")))
 (closer-mop:class-slots (class-of (make-instance 'c2 :name "hello")))
+
+
+(mito:insert-dao (make-instance 'c2 :name "ron" :email "ron@fig.com" :age-claimed 17))
