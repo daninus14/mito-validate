@@ -49,6 +49,7 @@ Here's a simple example:
 
 This will add automatic Common Lisp validation before sending the request to the DataBase. See the reference below for more details.
 
+See the manual below for object level validation.
 * Manual
 
 ** Functionality
@@ -105,7 +106,7 @@ The function should signal a condition in case the data is invalid; otherwise th
 
 Any returned values are ignored.
 
-** TODO Object Level Validation
+** Object Level Validation
 
 A validation function which will receive the object as its input can be provided in the class definition with the key =:validation-function= in the metaclass.
 
@@ -119,24 +120,76 @@ The function should signal a condition in case the data is invalid; otherwise th
 
 Any returned values are ignored.
 
+Here's an example:
+
+#+BEGIN_SRC common-lisp
+(defclass purchase ()
+  ((items
+    :accessor items
+    :col-type (or :null :integer))
+   (price
+    :accessor price
+    :col-type (or :null :integer)))
+  (:metaclass mito-validate-metaclass))
+
+MITO-VALIDATE> (mito:insert-dao (make-instance 'purchase :items 3 :price 4))
+#<PURCHASE {100422EAD3}>
+MITO-VALIDATE> (price *)
+4 (3 bits, #x4, #o4, #b100)
+MITO-VALIDATE> (setf (validation-function (find-class 'purchase))
+      (lambda (x)
+        (when (< 10 (* (price x)
+                       (items x)))
+          (error "Purchase total cannot exceed 10!"))))
+#<FUNCTION (LAMBDA (X)) {B8011D273B}>
+MITO-VALIDATE> (mito:insert-dao (make-instance 'purchase :items 3 :price 4))
+; Debugger entered on #<SIMPLE-ERROR "Purchase total cannot exceed 10!" {1006ECDB93}>
+[1] MITO-VALIDATE> 
+; Evaluation aborted on #<SIMPLE-ERROR "Purchase total cannot exceed 10!" {1006ECDB93}>
+
+#+END_SRC
+
 ** Skipping Validation
-
-*** Skipping All Slot Level Validation
-
-By providing the key =:skip-slot-validations= in the class definition, all the slot level validations will be skipped.
-
 *** Skipping A Slot Level Validation
 
 By providing the key =:skip-validation= in the slot definition, the slot level validation will be skipped.
 
 This will skip *all* validations, whether they be DB Derived Validations, or provided type or function validations.
+*** Skip All Validations
+
+By providing =:skip-validation= in the class definition, all validations will be skipped even if explicitly declared.
+
+Here's an example of skipping all class level validations:
+
+#+BEGIN_SRC
+MITO-VALIDATE> (skip-validation (find-class 'c2))
+NIL
+MITO-VALIDATE> (setf (skip-validation (find-class 'c2)) T)
+T
+MITO-VALIDATE> (mito:insert-dao (make-instance 'c2 :name "ron" :email "ron@fig.com" :age-claimed 17))
+#<C2 {100410B213}>
+MITO-VALIDATE> (setf (skip-validation (find-class 'c2)) NIL)
+NIL
+MITO-VALIDATE> (mito:insert-dao (make-instance 'c2 :name "ron" :email "ron@fig.com" :age-claimed 17))
+; Debugger entered on #<TYPE-ERROR expected-type: (INTEGER 18) datum: 17> ; ; ; ; ; ; ; ; ;
+[1] MITO-VALIDATE> 
+; Evaluation aborted on #<TYPE-ERROR expected-type: (INTEGER 18) datum: 17> ; ; ; ; ; ; ; ; ;
+#+END_SRC
+
+*** Skipping All Slot Level Validation
+
+By providing the key =:skip-slot-validations= in the class definition, all the slot level validations will be skipped.
+
+See above "Skip All Validation" for an example of setting the class level properties.
 
 *** Skipping Object Level Validation 
 
 By providing the key =:skip-object-validation= in the class definition, the object level validation will be skipped.
 
+See above "Skip All Validation" for an example of setting the class level properties.
+
 * TODO Items
 ** TODO Add macro for class level validation details for easy
 *** TODO Add macro documentation 
-** TODO Add documentation for adding class level validation
+** DONE Add documentation for adding class level validation
 ** TODO Add Inferred Validation Implementation  

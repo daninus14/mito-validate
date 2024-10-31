@@ -1,3 +1,4 @@
+(in-package :mito-validate)
 (ql:quickload "mito")
 (ql:quickload "mito-validate")
 (setf mito:*auto-migration-mode* T)
@@ -109,3 +110,56 @@
 (mito:insert-dao (make-instance 'c2 :name "ron" :email "ron@fig.com" :age-claimed 17))
 (mito:insert-dao (make-instance 'c2 :name "ron" :email "ron@fig.com" :age -18))
 (mito:insert-dao (make-instance 'c2 :name "ron" :email "ron@fig.com" :age 18))
+
+;;; Class Slots for Validation
+#||
+26. INFER-VALIDATION: NIL
+27. SKIP-VALIDATION: NIL
+28. SKIP-SLOT-VALIDATIONS: NIL
+29. SKIP-OBJECT-VALIDATION: NIL
+30. VALIDATION-FUNCTION: NIL
+||#
+
+(mito:insert-dao (make-instance 'c2 :name "ron" :email "ron@fig.com" :age-claimed 17))
+
+(skip-validation (find-class 'c2))
+(setf (skip-validation (find-class 'c2)) T)
+
+#||
+MITO-VALIDATE> (skip-validation (find-class 'c2))
+NIL
+MITO-VALIDATE> (setf (skip-validation (find-class 'c2)) T)
+T
+MITO-VALIDATE> (mito:insert-dao (make-instance 'c2 :name "ron" :email "ron@fig.com" :age-claimed 17))
+#<C2 {100410B213}>
+MITO-VALIDATE> (setf (skip-validation (find-class 'c2)) NIL)
+NIL
+MITO-VALIDATE> (mito:insert-dao (make-instance 'c2 :name "ron" :email "ron@fig.com" :age-claimed 17))
+; Debugger entered on #<TYPE-ERROR expected-type: (INTEGER 18) datum: 17> ; ; ; ; ; ; ; ; ;
+[1] MITO-VALIDATE> 
+; Evaluation aborted on #<TYPE-ERROR expected-type: (INTEGER 18) datum: 17> ; ; ; ; ; ; ; ; ;
+||#
+
+
+(defclass purchase ()
+  ((items
+    :accessor items
+    :col-type (or :null :integer))
+   (price
+    :accessor price
+    :col-type (or :null :integer)))
+  (:metaclass mito-validate-metaclass))
+
+(setf (validation-function (find-class 'purchase))
+      NIL)
+
+(mito:insert-dao (make-instance 'purchase :items 3 :price 4))
+
+(validation-function (find-class 'purchase))
+(setf (validation-function (find-class 'purchase))
+      (lambda (x)
+        (when (< 10 (* (price x)
+                       (items x)))
+          (error "Purchase total cannot exceed 10!"))))
+
+(mito:insert-dao (make-instance 'purchase :items 3 :price 4))
