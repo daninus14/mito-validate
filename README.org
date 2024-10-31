@@ -181,7 +181,7 @@ By providing =:skip-validation= in the class definition, all validations will be
 
 Here's an example of skipping all class level validations:
 
-#+BEGIN_SRC
+#+BEGIN_SRC common-lisp
 MITO-VALIDATE> (skip-validation (find-class 'c2))
 NIL
 MITO-VALIDATE> (setf (skip-validation (find-class 'c2)) T)
