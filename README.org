@@ -27,23 +27,38 @@ Here's a simple example:
 
 #+BEGIN_SRC common-lisp
   (defclass customer ()
-    ; only people 18 and older can make purchases
-    ((age :type :integer :validation-type (integer 18 )) 
+    ;; only people 18 and older can make purchases
+    ((age
+      :type :integer
+      :col-type (or :null :integer)
+      :validation-type (integer 18 )) 
      ;; function below checkes input has only alphabetical characters and is not empty
-     (name :type :text :validation-function (lambda (x) (str: x "^[a-zA-Z]+$")))
-     ; this will automatically check in CL that data is an integer
-     (favorite-number :type :integer))
-    (mito-validate-metaclass)) 
+     (name
+      :type :text
+      :col-type (or :null :text)
+      :validation-function
+      (lambda (x)
+        (unless
+            (cl-ppcre:all-matches-as-strings "^[a-zA-Z ]+$"
+                                             x)
+          (error "name can only have letters and space!"))))
+                                          ; this will automatically check in CL that data is an integer
+     (favorite-number
+      :type :integer
+      :col-type (or :null :integer)))
+    (:metaclass mito-validate:mito-validate-metaclass))
 
-  (mito:insert-dao (make-instance 'customer :age 20 :name "Phil" :favorite-number 24))
-  =>
-
-  (mito:insert-dao (make-instance 'customer :age 16 :name "Phil" :favorite-number 24))
-
-  (mito:insert-dao (make-instance 'customer :age 20 :name "Phil18" :favorite-number 24))
-
-  (mito:insert-dao (make-instance 'customer :age 20 :name "Phil" :favorite-number "24"))
-  ;; To set an object level validation function do 
+  => #<MITO-VALIDATE-METACLASS MITO-VALIDATE::CUSTOMER>
+  MITO-VALIDATE> (mito:insert-dao (make-instance 'customer :age 16 :name "Phil" :favorite-number 24))
+  ;; Debugger entered on #<TYPE-ERROR expected-type: (INTEGER 18) datum: 16>
+  [1] MITO-VALIDATE> 
+  ;; Evaluation aborted on #<TYPE-ERROR expected-type: (INTEGER 18) datum: 16>
+  MITO-VALIDATE> (mito:insert-dao (make-instance 'customer :age 20 :name "Phil18" :favorite-number 24))
+  ;; Debugger entered on #<SIMPLE-ERROR "name can only have letters and space!" {10050BD403}>
+  [1] MITO-VALIDATE> 
+  ;; Evaluation aborted on #<SIMPLE-ERROR "name can only have letters and space!" {10050BD403}>
+  MITO-VALIDATE>   (mito:insert-dao (make-instance 'customer :age 20 :name "Phil" :favorite-number "24"))
+  #<CUSTOMER {1004F654F3}>
 
 #+END_SRC
 
