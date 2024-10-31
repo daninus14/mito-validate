@@ -9,7 +9,7 @@ Right now the source code is hosted here: https://github.com/daninus14/mito-vali
 
 Please check in the future for quicklisp and osicl availability.
 
-Note that because of an implementation error in mito signaling an error unnecessarily, computing effective slots is not possible, so until they merge our PR, please use our up to date (as of 2024/10/31) for of mito here https://github.com/daninus14/mito
+Note that because of an implementation error in mito signaling an error unnecessarily, computing effective slots is not possible, so until they merge our PR, please use our up to date (as of 2024/10/31) repository for mito here https://github.com/daninus14/mito
 
 ** Basic Usage
 
