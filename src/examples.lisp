@@ -163,3 +163,97 @@ MITO-VALIDATE> (mito:insert-dao (make-instance 'c2 :name "ron" :email "ron@fig.c
           (error "Purchase total cannot exceed 10!"))))
 
 (mito:insert-dao (make-instance 'purchase :items 3 :price 4))
+
+(defmacro deftablev (class-name superclasses slot-definitions class-validations &rest options)
+  `(progn
+     (defclass ,class-name ,superclasses
+       ,slot-definitions
+       (:metaclass mito-validate:mito-validate-metaclass)
+       ,@options)
+     ;; over here loop over property list and generate (setf) forms
+     ;; Need to get the accessor from the provided symbol
+     ;; Probably with slot-definition-name
+     ;; Or maybe can just do (slot-value class name) instead of getting the accessor
+     ;; don't forget to do (find-class ,class-name) to get the actual class object
+     (progn ,@(loop for key in class-validations by #'cddr
+                    for value in (cdr class-validations) by #'cddr
+                    collect `(set-validation ,key ,value ',class-name)))))
+
+(defmacro set-validation (validation-key validation-value class-name)
+  `(setf
+    (slot-value (find-class ,class-name) (get-slot-from-symbol ,validation-key ,class-name))
+    ,validation-value))
+
+(let ((plist '(:name "Alice" :age 30 :city "Wonderland")))
+  (loop for key in plist by #'cddr
+        for value in (cdr plist) by #'cddr
+        do (format t "Key: ~a, Value: ~a~%" key value)))
+
+
+(symbol-name :validation-function)
+(class-of (find-class 'c2))
+(closer-mop:slot-definition-name (nth 30 (closer-mop:class-slots (class-of (find-class 'c2)))))
+(string=
+ (symbol-name :validation-function)
+ (symbol-name (closer-mop:slot-definition-name
+               (nth 30 (closer-mop:class-slots (class-of (find-class 'c2)))))))
+
+(defun get-metaclass-slots (class-name)
+  (closer-mop:class-slots (class-of (find-class class-name))))
+
+(defun get-slot-name-string (slot)
+  (symbol-name (closer-mop:slot-definition-name slot)))
+
+(defun slot-name= (name-string slot)
+  (string= name-string
+           (get-slot-name-string slot)))
+
+(find (symbol-name :validation-function) (get-metaclass-slots 'c2) :test #'slot-name=)
+
+(defun find-slot-form-symbol (symbol class-name)
+  (find (symbol-name symbol) (get-metaclass-slots class-name) :test #'slot-name=))
+
+(find-slot-form-symbol :validation-function 'c2)
+
+(closer-mop:slot-definition-name (find-slot-form-symbol :validation-function 'c2))
+
+(defun get-slot-from-symbol (symbol class-name)
+  (closer-mop:slot-definition-name
+   (find-slot-form-symbol symbol class-name)))
+
+(setf (slot-value
+       (find-class 'c2)
+       (closer-mop:slot-definition-name
+        (find-slot-form-symbol :validation-function 'c2)))
+      2)
+
+(setf
+ (slot-value (find-class 'c2) (get-slot-from-symbol :validation-function 'c2))
+ (lambda (x) (* 9 9)))
+
+;; TODO now probably use that slot, or slot definition name with slot-value to set the value
+;; finish the macro set-validation
+;; then finish the previous macro which should call set-validation
+;; make sure the macro expansion generates the right code 
+(deftablev c4 ()
+  ((items
+    :accessor items
+    :col-type (or :null :integer))
+   (price
+    :accessor price
+    :col-type (or :null :integer)))
+  (:validation-function (lambda (x)
+                          (when (< 10 (* (price x)
+                                         (items x)))
+                            (error "Purchase total cannot exceed 10!"))))
+  (:documentation "This is a sample table"))
+
+(setf (validation-function (find-class 'purchase))
+      (lambda (x)
+        (when (< 10 (* (price x)
+                       (items x)))
+          (error "Purchase total cannot exceed 10!"))))
+
+(mito:insert-dao (make-instance 'c4 :items 3 :price 4))
+
+(mito:deftable)

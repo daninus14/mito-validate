@@ -1,5 +1,7 @@
 * mito-validate
-Validation System for mito ORM
+Validation System for mito ORM.
+
+The purpose of this sytem is to make it easier to integrate validation with mito by ensuring validation happens before an insert to the DB and by providing a convenient place to define the validations.
 
 *NOTE*: This is *not* a data validation library. Rather this is a convenient way to integrate validation with mito objects, and ensure they are validated before a DB call is made.
 For data validation libraries, take a look at the cliki and the awesome-cl list of projects.
@@ -26,6 +28,9 @@ First, load the system into the lisp image.
 Then simply add the =mito-validate-metaclass= metaclass to the class definition of the DB table.
 
 The keys =:validation-type= and =:validation-function= can be used at each slot definition, and the key =:validation-function= can be used at the class level definition to provide slot level and object level validation respectively.
+
+** Examples
+*** Example with =defclass=
 
 Here's a simple example:
 
@@ -68,10 +73,62 @@ Here's a simple example:
 
 This will add automatic Common Lisp validation before sending the request to the DataBase. See the reference below for more details.
 
-See the manual below for object level validation.
+See the example below for an object level validation example, and the manual for more details.
+
+*** Example with the =deftablev= Macro for Object Level Validation
+
+Here's an example with the =deftablev= macro, which is basically a =defclass= under the hood with the addition of adding the object level validation.
+
+#+BEGIN_SRC common-lisp
+(deftablev c4 ()
+  ((items
+    :accessor items
+    :col-type (or :null :integer))
+   (price
+    :accessor price
+    :col-type (or :null :integer)))
+  (:validation-function (lambda (x)
+                          (when (< 10 (* (price x)
+                                         (items x)))
+                            (error "Purchase total cannot exceed 10!"))))
+  (:documentation "This is a sample table"))
+  #+END_SRC
+
+  The above is the equivalent of:
+
+  #+BEGIN_SRC common-lisp
+    (defclass c4 ()
+      ((items
+        :accessor items
+        :col-type (or :null :integer))
+       (price
+        :accessor price
+        :col-type (or :null :integer))))
+
+
+    (setf (validation-function (find-class c4))
+          (lambda (x)
+            (when (< 10 (* (price x)
+                           (items x)))
+              (error "Purchase total cannot exceed 10!")))))
+#+END_SRC
+
 * Manual
-** TODO Convenience Macro for Validation Definitions
+** Convenience Macro for Validation Definitions
 The following macro makes it easier to define all the slot level and class level validations, as well as defining a mito table.
+
+#+BEGIN_SRC common-lisp
+(defmacro deftablev (class-name superclasses slot-definitions class-validations &rest options))
+#+END_SRC
+
+Note that options *must* be after the validation functions.
+
+In addition, the following macro should be helpful for defining object level validations outside of the class definition:
+
+#+BEGIN_SRC common-lisp
+(defmacro set-validation (validation-key validation-value class-name))
+#+END_SRC
+
 ** Functionality
 
 The way =mito-validate= works is by providing two types of validation:
@@ -84,6 +141,7 @@ Validations will be triggered when =(mito:insert-dao)= or =(mito:save-dao)= are 
 
 ** Slot Level Validation
 *** TODO DB Type Derivied Validation
+*NOTE: THIS IS NOT YET IMPLEMENTED*
 mito-validate will try to make a validation type based on the provided mito type of the slot. Please note that the validation will be based on CL types.
 
 This functionality is disabled by default.
@@ -97,7 +155,7 @@ To infer the validation type for all the slots on a class, whenever there is no 
 Here is a list of the mito SQL types and the Common Lisp types that will be used to validate them
 
 #+BEGIN_SRC common-lisp
-list here mito types, and what CL types I'm using to validate the data.
+  list here mito types, and what CL types I'm using to validate the data.
 #+END_SRC
 
 *** Validation Type Assertion
@@ -123,7 +181,7 @@ mito-validate will simply evaluate the function passing it the slot data as the 
 The function must therefore fit the following function:
 
 #+BEGIN_SRC common-lisp
-(lambda (x))
+  (lambda (x))
 #+END_SRC
 
 The function should signal an error condition in case the data is invalid; otherwise the data will be assumed to be valid. 
@@ -137,7 +195,7 @@ A validation function which will receive the object as its input can be provided
 The function takes in only one argument, which is the object itself.
 
 #+BEGIN_SRC common-lisp
-(lambda (x))
+  (lambda (x))
 #+END_SRC
 
 The function should signal a condition in case the data is invalid; otherwise the data will be assumed to be valid. 
@@ -147,29 +205,29 @@ Any returned values are ignored.
 Here's an example:
 
 #+BEGIN_SRC common-lisp
-(defclass purchase ()
-  ((items
-    :accessor items
-    :col-type (or :null :integer))
-   (price
-    :accessor price
-    :col-type (or :null :integer)))
-  (:metaclass mito-validate-metaclass))
+  (defclass purchase ()
+    ((items
+      :accessor items
+      :col-type (or :null :integer))
+     (price
+      :accessor price
+      :col-type (or :null :integer)))
+    (:metaclass mito-validate-metaclass))
 
-MITO-VALIDATE> (mito:insert-dao (make-instance 'purchase :items 3 :price 4))
-#<PURCHASE {100422EAD3}>
-MITO-VALIDATE> (price *)
-4 (3 bits, #x4, #o4, #b100)
-MITO-VALIDATE> (setf (validation-function (find-class 'purchase))
-      (lambda (x)
-        (when (< 10 (* (price x)
-                       (items x)))
-          (error "Purchase total cannot exceed 10!"))))
-#<FUNCTION (LAMBDA (X)) {B8011D273B}>
-MITO-VALIDATE> (mito:insert-dao (make-instance 'purchase :items 3 :price 4))
-; Debugger entered on #<SIMPLE-ERROR "Purchase total cannot exceed 10!" {1006ECDB93}>
-[1] MITO-VALIDATE> 
-; Evaluation aborted on #<SIMPLE-ERROR "Purchase total cannot exceed 10!" {1006ECDB93}>
+  MITO-VALIDATE> (mito:insert-dao (make-instance 'purchase :items 3 :price 4))
+  #<PURCHASE {100422EAD3}>
+  MITO-VALIDATE> (price *)
+  4 (3 bits, #x4, #o4, #b100)
+  MITO-VALIDATE> (setf (validation-function (find-class 'purchase))
+                       (lambda (x)
+                         (when (< 10 (* (price x)
+                                        (items x)))
+                           (error "Purchase total cannot exceed 10!"))))
+  #<FUNCTION (LAMBDA (X)) {B8011D273B}>
+  MITO-VALIDATE> (mito:insert-dao (make-instance 'purchase :items 3 :price 4))
+                                          ; Debugger entered on #<SIMPLE-ERROR "Purchase total cannot exceed 10!" {1006ECDB93}>
+  [1] MITO-VALIDATE> 
+                                          ; Evaluation aborted on #<SIMPLE-ERROR "Purchase total cannot exceed 10!" {1006ECDB93}>
 
 #+END_SRC
 
@@ -212,8 +270,6 @@ By providing the key =:skip-object-validation= in the class definition, the obje
 
 See above "Skip All Validation" for an example of setting the class level properties.
 
-* TODO Items
-** TODO Add macro for class level validation details for easy
-*** TODO Add macro documentation 
-** DONE Add documentation for adding class level validation
+
+* TODO TODO Items
 ** TODO Add Inferred Validation Implementation  
