@@ -7,6 +7,12 @@ The purpose of this sytem is to make it easier to integrate validation with mito
 For data validation libraries, take a look at the cliki and the awesome-cl list of projects.
 Data validation libraries are meant to be used together with this system for ease of use. They are not exclusive of each other.
 
+Right now this makes it very easy to add validation based on types and functions to slots, and with a function to the whole object.
+
+*TODO*: We are planning on adding inferred type validation as well as a macro for ease of defining the class level settings.
+
+Please note GitHub is not rendering TODO items in this org file. The inferred and macro sections are *not* finished.
+
 * Getting Started
 
 ** Getting the code
@@ -15,7 +21,7 @@ Right now the source code is hosted here: https://github.com/daninus14/mito-vali
 
 Please check in the future for quicklisp and osicl availability.
 
-Note that because of an implementation error in mito signaling an error unnecessarily, computing effective slots is not possible, so until they merge our PR, please use our up to date (as of 2024/10/31) for of mito here https://github.com/daninus14/mito
+Note that because of an implementation error in mito signaling an error unnecessarily, computing effective slots is not possible, so until they merge our PR, please use our up to date (as of 2024/10/31) repository for mito here https://github.com/daninus14/mito
 
 ** Basic Usage
 
