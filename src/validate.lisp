@@ -1,4 +1,4 @@
-(in-package #:mito-validate)
+(in-package :mito-validate)
 
 ;;; mito methods added to call validation before DB writes
 

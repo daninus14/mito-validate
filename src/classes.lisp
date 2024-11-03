@@ -1,4 +1,4 @@
-(in-package #:mito-validate)
+(in-package :mito-validate)
 
 
 (defgeneric validation-type-slot-value (given-object))
@@ -33,19 +33,15 @@
                     :accessor validation-type-slot-value
                     :documentation "This provides the option to specify the slot with a validation-type property.")))
 
-(defclass mito-validate-custom-standard-direct-slot-definition
-    (mito-validate-slot-definition c2mop:standard-direct-slot-definition)
-  ())
-
-(defclass mito-validate-custom-standard-effective-slot-definition
-    (mito-validate-slot-definition closer-mop:standard-effective-slot-definition)
-  ())
-
-(defclass mito-validate-standard-direct-slot-definition (mito.dao.column:dao-table-column-class  mito-validate-custom-standard-direct-slot-definition)
+(defclass mito-validate-standard-direct-slot-definition (mito.dao.column:dao-table-column-class
+                                                         mito-validate-slot-definition
+                                                         c2mop:standard-direct-slot-definition)
   ())
 
 (defclass mito-validate-standard-effective-slot-definition
-    (mito.dao.column:dao-table-column-class  mito-validate-custom-standard-effective-slot-definition)
+    (mito.dao.column:dao-table-column-class
+     mito-validate-slot-definition
+     closer-mop:standard-effective-slot-definition)
   ())
 
 (defclass mito-validate-metaclass (mito:dao-table-class)

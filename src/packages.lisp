@@ -1,6 +1,6 @@
 (cl:in-package #:common-lisp-user)
 
-(defpackage #:mito-validate
+(defpackage mito-validate
   (:use :cl)
   (:export
    #:deftablev

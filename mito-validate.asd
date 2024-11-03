@@ -6,7 +6,9 @@
                "closer-mop")
   :components ((:module "src"
                 :components
-                ((:file "mito-validate")
-                 (:file "packages")
-                 (:file "classes"))))
+                ((:file "packages")
+                 (:file "mito-validate")
+                 (:file "validate")
+                 (:file "classes")
+                 (:file "shorthand"))))
   :description "Validation System for mito ORM")
