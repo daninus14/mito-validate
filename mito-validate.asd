@@ -8,7 +8,6 @@
                 :components
                 ((:file "packages")
                  (:file "classes")
-                 (:file "mito-validate")
                  (:file "validate")                 
                  (:file "shorthand"))))
   :description "Validation System for mito ORM")
