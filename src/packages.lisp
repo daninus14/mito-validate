@@ -7,6 +7,7 @@
    #:set-validation
    #:validation-type
    #:validation-function
+   #:mito-validate-metaclass-mixin 
    #:mito-validate-metaclass
    #:skip-object-validation
    #:skip-slot-validations

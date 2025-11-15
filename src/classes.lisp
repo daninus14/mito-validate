@@ -44,7 +44,7 @@
      closer-mop:standard-effective-slot-definition)
   ())
 
-(defclass mito-validate-metaclass (mito:dao-table-class)
+(defclass mito-validate-metaclass-mixin (mito:dao-table-mixin)
   ((infer-validation
     :initform nil
     :initarg :infer-validation
@@ -68,22 +68,29 @@
     :accessor validation-function
     :documentation "An optional function which will receive the an instance of the class as its argument. In case the object is not valid, a condition should be signaled. Returned values will be ignored.")))
 
-(defmethod closer-mop:direct-slot-definition-class ((class mito-validate-metaclass)
+(defclass mito-validate-metaclass (mito-validate-metaclass-mixin mito:dao-table-class)
+  ())
+
+(defmethod closer-mop:direct-slot-definition-class ((class mito-validate-metaclass-mixin)
                                                     &rest initargs)
   (declare (ignorable initargs))
   (find-class 'mito-validate-standard-direct-slot-definition))
 
-(defmethod closer-mop:effective-slot-definition-class ((class mito-validate-metaclass)
+(defmethod closer-mop:effective-slot-definition-class ((class mito-validate-metaclass-mixin)
                                                        &rest initargs)
   (declare (ignorable initargs))
   (find-class 'mito-validate-standard-effective-slot-definition))
+
+(defmethod closer-mop:validate-superclass ((class mito-validate-metaclass-mixin)
+                                           (superclass closer-mop:standard-class))
+  t)
 
 (defmethod closer-mop:validate-superclass ((class mito-validate-metaclass)
                                            (superclass closer-mop:standard-class))
   t)
 
 (defmethod closer-mop:compute-effective-slot-definition
-    :around ((class mito-validate-metaclass) name direct-slot-definitions)
+    :around ((class mito-validate-metaclass-mixin) name direct-slot-definitions)
   (declare (ignore name))
   (let ((result (call-next-method)))
     (when result

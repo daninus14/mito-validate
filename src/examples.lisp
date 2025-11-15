@@ -12,6 +12,9 @@
                        :password "pruebauser")
                                         ;=> #<DBD.MYSQL:<DBD-MYSQL-CONNECTION> {100691BFF3}>
 
+(mito:connect-toplevel :sqlite3
+                       :database-name #P":memory:")
+
 (mito:deftable user ()
   ((name :col-type (:varchar 64))
    (email :col-type (or (:varchar 128) :null))))
