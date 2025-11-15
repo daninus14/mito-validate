@@ -28,7 +28,8 @@
 
 (defmacro set-validation (validation-key validation-value class-name)
   `(setf
-    (slot-value (find-class ,class-name) (get-slot-from-symbol ,validation-key ,class-name))
+    ;; specified the package below since this macro may be used elsewhere, in order for it to be correct 
+    (slot-value (find-class ,class-name) (mito-validate::get-slot-from-symbol ,validation-key ,class-name))
     ,validation-value))
 
 (defmacro deftablev (class-name superclasses slot-definitions class-validations &rest options)
@@ -39,4 +40,4 @@
        ,@options)
      (progn ,@(loop for key in class-validations by #'cddr
                     for value in (cdr class-validations) by #'cddr
-                    collect `(set-validation ,key ,value ',class-name)))))
+                    collect `(mito-validate::set-validation ,key ,value ',class-name)))))
