@@ -18,3 +18,5 @@
 .qlot/
 *~
 *#
+.emacs.*
+.DS_Store
